@@ -25,7 +25,6 @@ int main()
 	
 	__u8 reg = 0x16;
 	__s32 res;
-	char buf[10];
 	while(true)
 	{
 		i2c_smbus_write_byte(file, (0x80 | 0x16));
@@ -36,7 +35,7 @@ int main()
 		} 
 		else
 		{
-			std::cout << buf << std::endl;
+			std::cout << res << std::endl;
 		}
 	}
 	return 0;
