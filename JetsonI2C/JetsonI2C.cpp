@@ -28,7 +28,8 @@ int main()
 	char buf[10];
 	while(true)
 	{
-		res = i2c_smbus_read_word_data(file, reg);
+		i2c_smbus_write_byte(file, (0x80 | 0x16));
+		res = i2c_smbus_read_byte(file);
 		if (res < 0) 
 		{
 			std::cout << "read failed" std::endl;
