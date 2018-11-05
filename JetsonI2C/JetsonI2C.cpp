@@ -1,5 +1,28 @@
 #include <stdlib.h>
 #include <iostream>
+#include <linux/i2c-dev.h>
+#include <sstream>
+
+const int COMMAND_REGISTER_BIT = 0x80;
+const int MULTI_BYTE_BIT    = 0x20;
+
+const int ENABLE_REGISTER   = 0x00;
+const int ATIME_REGISTER    = 0x01;
+const int PPULSE_REGISTER   = 0x0E;
+
+const int ID_REGISTER       = 0x12;
+const int CDATA_REGISTER    = 0x14;
+const int RDATA_REGISTER    = 0x16;
+const int GDATA_REGISTER    = 0x18;
+const int BDATA_REGISTER    = 0x1A;
+const int PDATA_REGISTER    = 0x1C;
+
+int read_word_register(int file, int address)
+{
+	uint8_t buf[2] = {0};
+	i2c_smbus_read_block_data(file, COMMAND_REGISTER_BIT | MULTI_BYTE_BIT | address, buf);
+	return buf[0];
+}
 
 int main()
 {	
@@ -22,13 +45,12 @@ int main()
 		std::cout << "init failed" std::endl;
 		exit(1);
 	}
-	
-	__u8 reg = 0x16;
+	i2c_smbus_write_byte(COMMAND_REGISTER_BIT | 0x00, 0b00000011); //power on, color sensor on
+
 	__s32 res;
 	while(true)
 	{
-		i2c_smbus_write_byte(file, (0x80 | 0x16));
-		res = i2c_smbus_read_byte(file);
+		res = read_word_register(file, RDATA_REGISTER);
 		if (res < 0) 
 		{
 			std::cout << "read failed" std::endl;
