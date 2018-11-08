@@ -19,15 +19,24 @@ const int PDATA_REGISTER    = 0x1C;
 
 int read_word_register(int file, int address)
 {
-	uint8_t buf[2] = {0};
-	i2c_smbus_read_block_data(file, COMMAND_REGISTER_BIT | MULTI_BYTE_BIT | address, buf);
-	return buf[0];
+	uint8_t buf;
+	s32 retval = i2c_smbus_read_byte_data(file, COMMAND_REGISTER_BIT | MULTI_BYTE_BIT | address);
+	uint16_t value = ((uint16_t)buf[1] << 8) | (uint16_t)buf[0];
+	
+	if(retval < 0)
+	{
+		return retval;
+	}
+	else 
+	{
+		return (int)retval;
+	} 
 }
 
 int main()
 {	
 	int file;
-	int adapter_nr = 0;
+	int adapter_nr = 1;
 	char filename[20];
 
 	snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
